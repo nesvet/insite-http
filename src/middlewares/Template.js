@@ -4,7 +4,7 @@ import { handleRequestCompressed } from "../compression";
 const headers = { "Content-Type": "text/html; charset=utf-8" };
 
 
-export class TemplateMiddleware {
+class InSiteTemplateMiddleware {
 	constructor(options = {}) {
 		const {
 			requestRegExp = /.*/,
@@ -45,3 +45,5 @@ export class TemplateMiddleware {
 	};
 	
 }
+
+export { InSiteTemplateMiddleware as TemplateMiddleware };

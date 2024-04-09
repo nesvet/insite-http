@@ -28,7 +28,7 @@ while (__basedir !== "/" && !fs.existsSync(path.join(__basedir, "package.json"))
 ////////////////////////////////////////////////////////////////////////////////
 
 
-export class InSiteStaticMiddleware {
+class InSiteStaticMiddleware {
 	constructor(options = {}) {
 		let {
 			src = "",
@@ -151,3 +151,5 @@ export class InSiteStaticMiddleware {
 	};
 	
 }
+
+export { InSiteStaticMiddleware as StaticMiddleware };

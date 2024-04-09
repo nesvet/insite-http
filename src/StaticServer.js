@@ -1,8 +1,8 @@
 import { StaticMiddleware } from "./middlewares/Static";
-import { InSiteServer } from "./Server";
+import { Server } from "./Server";
 
 
-export class InSiteStaticServer extends InSiteServer {
+class InSiteStaticServer extends Server {
 	constructor(options, serverOptions) {
 		super({
 			...serverOptions,
@@ -21,3 +21,5 @@ export class InSiteStaticServer extends InSiteServer {
 	}
 	
 }
+
+export { InSiteStaticServer as StaticServer };

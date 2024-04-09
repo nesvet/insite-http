@@ -5,11 +5,11 @@ import { InSiteServerResponse } from "./Response";
 import { inSiteRequestSymbol, inSiteServerSymbol } from "./symbols";
 
 
-export class InSiteServer {
+class InSiteServer {
 	constructor({
-		https: isHTTPS = true,
 		port,
 		ssl,
+		https: isHTTPS = !!ssl,
 		listeners,
 		errors,
 		server = {},
@@ -18,10 +18,10 @@ export class InSiteServer {
 		
 		this.isHTTPS = isHTTPS;
 		
-		if (this.isHTTPS && !ssl && process.env.SSL_CERT && process.env.SSL_KEY)
+		if (this.isHTTPS && !ssl && process.env.INSITE_HTTPS_SSL_CERT && process.env.INSITE_HTTPS_SSL_KEY)
 			ssl = {
-				cert: process.env.SSL_CERT,
-				key: process.env.SSL_KEY
+				cert: process.env.INSITE_HTTPS_SSL_CERT,
+				key: process.env.INSITE_HTTPS_SSL_KEY
 			};
 		
 		if (ssl) {
@@ -225,3 +225,5 @@ export class InSiteServer {
 	}
 	
 }
+
+export { InSiteServer as Server };
