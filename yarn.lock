@@ -196,9 +196,9 @@
   integrity sha512-IJy1jRL01x7p6UEpgKa1lVLstMUx8EiIR8pPoS5sBfsHEoeLkzYiNpAfxPx8zLDUJyS1yBbChJjcWdPqyH285w==
 
 "@nesvet/conveyer@^1":
-  version "1.0.2105"
-  resolved "https://registry.yarnpkg.com/@nesvet/conveyer/-/conveyer-1.0.2105.tgz#f7dc33b90debc638b9abcccd1e27857ad0ae0ee1"
-  integrity sha512-doaUvDFT6c1iWnYZL+kkCLOqxlCUuk0okzj1CeNT0NmtyiOngp05h4NOSkhwEXA8AqtJyU7lYCEYe2K3w++rDg==
+  version "1.0.2107"
+  resolved "https://registry.yarnpkg.com/@nesvet/conveyer/-/conveyer-1.0.2107.tgz#ac156e2c5affb7e149ac447dc8f9ea193eb3a121"
+  integrity sha512-0cC8MMMsecLq+HK+gRSrhLgWXsDoCGmxUWIpvzyTNKeD2u8bO12j5g35MxGDeKFUlu8gz3PMd5G03I1HmKlDJQ==
   dependencies:
     "@nesvet/n" "^1"
     anymatch "^3"
@@ -217,9 +217,9 @@
     zip-a-folder "^2"
 
 "@nesvet/deprecated-extensions@^1":
-  version "1.0.173"
-  resolved "https://registry.yarnpkg.com/@nesvet/deprecated-extensions/-/deprecated-extensions-1.0.173.tgz#5435db2fbb7b7198fcc711b9eb61241b3e6aafbc"
-  integrity sha512-UQywyzhJNb2JMraXCfFI+zImWywjDpc6GYZ7x1356EXZ1LT48zAnT9RI+b/Duwtz8i6biZUpqKoMC6y6Dk3OIg==
+  version "1.0.175"
+  resolved "https://registry.yarnpkg.com/@nesvet/deprecated-extensions/-/deprecated-extensions-1.0.175.tgz#087d384ced1c47ccde16bb02156f55e9f7ad0908"
+  integrity sha512-OyyBI181PFw2Lw0Oihss8GLELdYo9Guby4oCvZZZUiSRsWtovcSoBK56mXY1oDXCdxFi0CEWelg+yBfAv6blaw==
 
 "@nesvet/eslint-config@^1":
   version "1.0.290"
@@ -2783,9 +2783,9 @@ typed-array-length@^1.0.6:
     possible-typed-array-names "^1.0.0"
 
 typescript@^5:
-  version "5.4.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.4.tgz#eb2471e7b0a5f1377523700a21669dce30c2d952"
-  integrity sha512-dGE2Vv8cpVvw28v8HCPqyb08EzbBURxDpuhJvTrusShUfGnhHBafDsLdS1EhhxyL6BJQE+2cT3dDPAv+MQ6oLw==
+  version "5.4.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
+  integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"
