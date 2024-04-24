@@ -3,7 +3,8 @@ import fse from "fs-extra";
 import {
 	brotliPreloadSync,
 	getCompressionStreamByEncoding,
-	gzipPreloadSync
+	gzipPreloadSync,
+	isBrotliSupported
 } from "../../compression";
 import { defaultExtensions } from "./extensions";
 import { defaultPreloaded } from "./preloaded";
@@ -108,7 +109,7 @@ class InSiteStaticMiddleware {
 			const { isText } = this.getExtensionBy(fileName);
 			const fileData = fse.readFileSync(fileName, isText ? "utf8" : null);
 			this.preloaded.set(fileName, isText ? {
-				br: brotliPreloadSync(fileData),
+				...isBrotliSupported && { br: brotliPreloadSync(fileData) },
 				gzip: gzipPreloadSync(fileData)
 			} : fileData);
 		} catch (error) {
@@ -127,7 +128,7 @@ class InSiteStaticMiddleware {
 			return response.notFound();
 		
 		const { mimeType, isText } = this.getExtensionBy(fileName);
-		const contentEncoding = isText ? /\bbr\b/.test(request.headers["accept-encoding"]) ? "br" : "gzip" : null;
+		const contentEncoding = isText ? isBrotliSupported && /\bbr\b/.test(request.headers["accept-encoding"]) ? "br" : "gzip" : null;
 		
 		response.writeHead(200, {
 			"Content-Type": mimeType + (isText ? "; charset=utf-8" : ""),
