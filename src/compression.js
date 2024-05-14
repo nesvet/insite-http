@@ -8,13 +8,6 @@ const brotliPreloadOptions = {
 	}
 };
 
-export let isBrotliSupported = false;
-
-try {
-	zlib.brotliCompressSync("", brotliPreloadOptions);
-	isBrotliSupported = true;
-} catch {}
-
 const brotliRuntimeOptions = {
 	params: {
 		[zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
@@ -40,20 +33,12 @@ export function gzipPreloadSync(data) {
 }
 
 export function getCompressionStreamByEncoding(contentEncoding) {
-	return (
-		isBrotliSupported && contentEncoding === "br" ?
-			zlib.createBrotliCompress(brotliRuntimeOptions) :
-			zlib.createGzip(gzipRuntimeOptions)
-	);
+	return contentEncoding === "br" ? zlib.createBrotliCompress(brotliRuntimeOptions) : zlib.createGzip(gzipRuntimeOptions);
 }
 
 export function handleRequestCompressed(request, response, headers, data) {
-	const isBrotliAccepted = isBrotliSupported && /\bbr\b/.test(request.headers["accept-encoding"]);
+	const isBrotliAccepted = /\bbr\b/.test(request.headers["accept-encoding"]);
 	headers["Content-Encoding"] = isBrotliAccepted ? "br" : "gzip";
-	response.writeHead(200, headers).end(
-		isBrotliAccepted ?
-			zlib.brotliCompressSync(data, brotliRuntimeOptions) :
-			zlib.gzipSync(data, gzipRuntimeOptions)
-	);
+	response.writeHead(200, headers).end(isBrotliAccepted ? zlib.brotliCompressSync(data, brotliRuntimeOptions) : zlib.gzipSync(data, gzipRuntimeOptions));
 	
 }
