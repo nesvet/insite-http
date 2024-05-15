@@ -1,33 +1,33 @@
 {
-	"name": "insite-https",
-	"version": "1.0.319",
-	"description": "inSite HTTPS server",
-	"type": "module",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"packageManager": "bun@1.1.8",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "bun .conveyer.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/nesvet/insite-https.git"
-	},
-	"keywords": [
-		"insite",
-		"https",
-		"server"
-	],
-	"author": "Eugene Nesvetaev <dev@nesvet.dev> (https://nesvet.dev/)",
-	"license": "MIT",
-	"dependencies": {
-		"@nesvet/deprecated-extensions": "^1",
-		"@nesvet/n": "^1",
-		"fs-extra": "^11"
-	},
-	"devDependencies": {
-		"@nesvet/conveyer": "^2",
-		"@nesvet/eslint-config": "^1"
-	}
+  "name": "insite-https",
+  "version": "1.0.319",
+  "description": "inSite HTTPS server",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "packageManager": "bun@1.1.8",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "bun .conveyer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nesvet/insite-https.git"
+  },
+  "keywords": [
+    "insite",
+    "https",
+    "server"
+  ],
+  "author": "Eugene Nesvetaev <dev@nesvet.dev> (https://nesvet.dev/)",
+  "license": "MIT",
+  "dependencies": {
+    "@nesvet/deprecated-extensions": "^1",
+    "@nesvet/n": "^1",
+    "fs-extra": "^11"
+  },
+  "devDependencies": {
+    "@nesvet/conveyer": "^2",
+    "@nesvet/eslint-config": "^1"
+  }
 }
