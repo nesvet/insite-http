@@ -123,10 +123,14 @@ class InSiteStaticMiddleware {
 		else
 			return new Promise(resolve => {
 				let stream = fse.createReadStream(fileName).on("error", () => resolve(false));
+				
 				if (contentEncoding)
 					stream = stream.pipe(getCompressionStreamByEncoding(contentEncoding));
+				
 				stream.on("end", resolve);
+				
 				stream.pipe(response);
+				
 			});
 		
 		
