@@ -1,6 +1,5 @@
 import path from "node:path";
-import { Conveyer, ESBuild } from "@nesvet/conveyer/stages";
-import { Packages } from "@nesvet/conveyer/Packages";
+import { Conveyer, ESBuild } from "@nesvet/conveyer";
 
 
 const { NODE_ENV } = process.env;
@@ -13,7 +12,7 @@ new Conveyer([
 	new ESBuild({
 		entryPoints: [ "src/index.js" ],
 		outfile: path.resolve(distDir, "index.js"),
-		external: new Packages().external().asNames(),
+		external: true,
 		platform: "node",
 		format: "esm",
 		sourcemap: true,
@@ -24,6 +23,5 @@ new Conveyer([
 	})
 	
 ], {
-	initialCleanup: distDir,
-	bumpVersions: { ignored: [ path.resolve(distDir, "**") ] }
+	initialCleanup: distDir
 });

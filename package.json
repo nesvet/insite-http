@@ -1,14 +1,14 @@
 {
 	"name": "insite-https",
-	"version": "1.0.297",
+	"version": "1.0.319",
 	"description": "inSite HTTPS server",
 	"type": "module",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
-	"packageManager": "yarn@1.22.22",
+	"packageManager": "bun@1.1.8",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "node .conveyer"
+		"build": "bun .conveyer.js"
 	},
 	"repository": {
 		"type": "git",
@@ -27,7 +27,7 @@
 		"fs-extra": "^11"
 	},
 	"devDependencies": {
-		"@nesvet/conveyer": "^1",
+		"@nesvet/conveyer": "^2",
 		"@nesvet/eslint-config": "^1"
 	}
 }
