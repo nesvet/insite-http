@@ -18,7 +18,7 @@ class InSiteTemplateMiddleware {
 		globals = {},
 		title = INSITE_TITLE ?? "inSite",
 		css = [],
-		rootId = "app"
+		rootId = "root"
 	} = {}) {
 		
 		this.listeners = { GET: [
