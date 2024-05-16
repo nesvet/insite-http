@@ -1,5 +1,5 @@
+import fs from "node:fs";
 import path from "node:path";
-import fse from "fs-extra";
 import { brotliPreloadSync, getCompressionStreamByEncoding, gzipPreloadSync } from "../../compression";
 import { defaultExtensions } from "./extensions";
 import { defaultPreloaded } from "./preloaded";
@@ -11,18 +11,23 @@ const nullExtension = {
 
 
 class InSiteStaticMiddleware {
-	constructor(options = {}) {
-		let {
-			src = "",
-			urlPrefix = "",
-			requestRegExp,
-			extensions = defaultExtensions,
-			resolved,
-			restricted,
-			preloaded
-		} = options;
+	constructor({
+		src = "",
+		urlPrefix = "",
+		requestRegExp,
+		extensions = defaultExtensions,
+		resolved,
+		restricted,
+		preloaded
+	} = {}) {
 		
-		this.src = path.isAbsolute(src) ? src : path.resolve(path.dirname(process.argv[1]), src);
+		if (!path.isAbsolute(src)) {
+			const entryPoint = process.argv[1];
+			src = path.resolve(fs.statSync(entryPoint).isDirectory() ? entryPoint : path.dirname(entryPoint), src);
+		}
+		
+		this.src = src;
+		
 		this.urlPrefix = urlPrefix;
 		this.urlPrefixRegExp = new RegExp(`^${path.join("/", urlPrefix, "/")}`);
 		
@@ -88,7 +93,7 @@ class InSiteStaticMiddleware {
 		
 		try {
 			const { isText } = this.getExtensionBy(fileName);
-			const fileData = fse.readFileSync(fileName, isText ? "utf8" : null);
+			const fileData = fs.readFileSync(fileName, isText ? "utf8" : null);
 			this.preloaded.set(fileName, isText ? {
 				br: brotliPreloadSync(fileData),
 				gzip: gzipPreloadSync(fileData)
@@ -99,13 +104,14 @@ class InSiteStaticMiddleware {
 		
 	}
 	
-	handler = async (request, response) => {
+	handler = (request, response) => {
 		let fileName = decodeURI(request.url).replace(this.urlPrefixRegExp, "").replace(/\.\.\//g, "");
 		fileName = this.resolved.get(fileName) ?? path.join(this.src, fileName);
 		
 		if (this.restricted.has(fileName))
 			return false;
-		if (!await fse.pathExists(fileName))
+		
+		if (!fs.existsSync(fileName))
 			return response.notFound();
 		
 		const { mimeType, isText } = this.getExtensionBy(fileName);
@@ -122,7 +128,7 @@ class InSiteStaticMiddleware {
 			response.end(isText ? preloaded[contentEncoding] : preloaded);
 		else
 			return new Promise(resolve => {
-				let stream = fse.createReadStream(fileName).on("error", () => resolve(false));
+				let stream = fs.createReadStream(fileName).on("error", () => resolve(false));
 				
 				if (contentEncoding)
 					stream = stream.pipe(getCompressionStreamByEncoding(contentEncoding));
