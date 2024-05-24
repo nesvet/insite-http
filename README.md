@@ -9,5 +9,5 @@ $ npm install insite-https
 Or
 
 ```sh
-$ yarn add insite-https
+$ bun add insite-https
 ```
