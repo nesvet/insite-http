@@ -1,13 +1,15 @@
 //#if _SERVER && _SSR
 // import { initialsMap } from "@insite/subscriptions";
 // import { handleRequestCompressed } from "../compression";
+// import { InSiteServerMiddleware } from "../Middleware";
 
 
 // const headers = { "Content-Type": "text/javascript; charset=utf-8" };
 
 
-// export class InitialsMiddleware {
+// export class InSiteInitialsMiddleware extends InSiteServerMiddleware {
 // 	constructor(options = {}) {
+// 		super();
 // 		const {
 // 			requestRegExp = /^\/initials\/?\?/
 // 		} = options;
@@ -31,7 +33,7 @@
 
 
 //#else
-export const InitialsMiddleware = undefined;
+export const InSiteInitialsMiddleware = undefined;
 
 
 //#endif

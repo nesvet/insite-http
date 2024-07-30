@@ -8,7 +8,7 @@ const distDir = "dist";
 new Conveyer([
 	
 	new ESBuild({
-		entryPoints: [ "src/index.js" ],
+		entryPoints: [ "src/index.ts" ],
 		outfile: path.resolve(distDir, "index.js"),
 		external: true,
 		platform: "node",

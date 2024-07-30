@@ -1,3 +1,6 @@
+import { Extension } from "./types";
+
+
 export const defaultExtensions = [
 	
 	[ "js", {
@@ -32,4 +35,4 @@ export const defaultExtensions = [
 		mimeType: "image/jpeg"
 	} ]
 	
-];
+].filter(Boolean) as Extension[];

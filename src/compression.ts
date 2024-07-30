@@ -1,4 +1,6 @@
-import zlib from "node:zlib";
+import { IncomingMessage, OutgoingHttpHeaders } from "node:http";
+import zlib, { InputType } from "node:zlib";
+import { InSiteServerResponse } from "./Response";
 
 
 const brotliPreloadOptions = {
@@ -24,20 +26,20 @@ const gzipRuntimeOptions = {
 };
 
 
-export function brotliPreloadSync(data) {
+export function brotliPreloadSync(data: InputType) {
 	return zlib.brotliCompressSync(data, brotliPreloadOptions);
 }
 
-export function gzipPreloadSync(data) {
+export function gzipPreloadSync(data: InputType) {
 	return zlib.gzipSync(data, gzipPreloadOptions);
 }
 
-export function getCompressionStreamByEncoding(contentEncoding) {
+export function getCompressionStreamByEncoding(contentEncoding: "br" | "gzip") {
 	return contentEncoding === "br" ? zlib.createBrotliCompress(brotliRuntimeOptions) : zlib.createGzip(gzipRuntimeOptions);
 }
 
-export function handleRequestCompressed(request, response, headers, data) {
-	const isBrotliAccepted = /\bbr\b/.test(request.headers["accept-encoding"]);
+export function handleRequestCompressed(request: IncomingMessage, response: InSiteServerResponse, headers: OutgoingHttpHeaders, data: InputType) {
+	const isBrotliAccepted = /\bbr\b/.test(request.headers["accept-encoding"] as string);
 	headers["Content-Encoding"] = isBrotliAccepted ? "br" : "gzip";
 	response.writeHead(200, headers).end(isBrotliAccepted ? zlib.brotliCompressSync(data, brotliRuntimeOptions) : zlib.gzipSync(data, gzipRuntimeOptions));
 	
