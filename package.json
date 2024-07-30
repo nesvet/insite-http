@@ -22,9 +22,7 @@
   "author": "Eugene Nesvetaev <dev@nesvet.dev> (https://nesvet.dev/)",
   "license": "MIT",
   "dependencies": {
-    "@nesvet/deprecated-extensions": "^1",
-    "@nesvet/n": "^1",
-    "fs-extra": "^11"
+    "@nesvet/n": "^1.0.75"
   },
   "devDependencies": {
     "@nesvet/conveyer": "^2",
