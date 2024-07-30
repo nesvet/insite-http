@@ -25,7 +25,6 @@
     "@nesvet/n": "^1.0.75"
   },
   "devDependencies": {
-    "@nesvet/conveyer": "^2",
-    "@nesvet/eslint-config": "^1"
+    "@nesvet/eslint-config": "^2.0.24",
   }
 }
