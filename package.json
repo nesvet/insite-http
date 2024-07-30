@@ -1,5 +1,5 @@
 {
-  "name": "insite-https",
+  "name": "insite-http",
   "version": "1.0.324",
   "description": "inSite HTTPS server",
   "type": "module",
@@ -13,10 +13,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nesvet/insite-https.git"
+    "url": "git+https://github.com/nesvet/insite-http.git"
   },
   "keywords": [
     "insite",
+    "http",
     "https",
     "server"
   ],
