@@ -1,13 +1,13 @@
-# inSite HTTPS server
+# inSite HTTP(S) server
 
 ## Installation
 
 ```sh
-$ npm install insite-https
+$ npm install insite-http
 ```
 
 Or
 
 ```sh
-$ bun add insite-https
+$ bun add insite-http
 ```
