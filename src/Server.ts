@@ -74,8 +74,7 @@ export class InSiteHTTPServer {
 		
 		if (middlewares)
 			for (const middleware of middlewares)
-				if (middleware)
-					this.addMiddleware(middleware);
+				this.addMiddleware(middleware);
 		
 		this.server =
 			this.isHTTPS ?
