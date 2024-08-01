@@ -24,12 +24,12 @@
   "author": "Eugene Nesvetaev <dev@nesvet.dev> (https://nesvet.dev/)",
   "license": "MIT",
   "dependencies": {
-    "@nesvet/n": "^1.0.75"
+    "@nesvet/n": "^1.0.76"
   },
   "devDependencies": {
     "@nesvet/conveyer": "^2.2.1",
     "@nesvet/eslint-config": "^2.0.24",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.0.2",
     "typescript": "^5.5.4"
   }
 }
