@@ -20,10 +20,10 @@ export type Method = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
 export type Handler = (request: IncomingMessage, response: InSiteServerResponse) => unknown;
 
 export type Options = {
-	port?: number;
+	port?: number | string;
 	ssl?: {
-		cert: string;
-		key: string;
+		cert: Buffer | string;
+		key: Buffer | string;
 	};
 	https?: boolean;
 	listeners?: Record<"ALL" | Method, [ RegExp, Handler ][]>;

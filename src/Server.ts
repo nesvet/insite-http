@@ -35,7 +35,7 @@ export class InSiteHTTPServer {
 		onListen
 	}: Options, middlewares: Middleware[] = []) {
 		
-		this.isHTTPS = isHTTPS;
+		this.isHTTPS = !!isHTTPS;
 		
 		if (this.isHTTPS && !ssl && INSITE_HTTP_SSL_CERT && INSITE_HTTP_SSL_KEY)
 			ssl = {
@@ -44,18 +44,18 @@ export class InSiteHTTPServer {
 			};
 		
 		if (ssl) {
-			if (!/^-{3,}BEGIN/.test(ssl.cert))
+			if (typeof ssl.cert == "string" && !/^-{3,}BEGIN/.test(ssl.cert))
 				try {
-					ssl.cert = fs.readFileSync(ssl.cert, "utf8");
+					ssl.cert = fs.readFileSync(ssl.cert);
 				} catch {}
-			if (!/^-{3,}BEGIN/.test(ssl.key))
+			if (typeof ssl.key == "string" && !/^-{3,}BEGIN/.test(ssl.key))
 				try {
-					ssl.key = fs.readFileSync(ssl.key, "utf8");
+					ssl.key = fs.readFileSync(ssl.key);
 				} catch {}
 		} else if (this.isHTTPS)
 			console.warn("⚠️ HTTPS server requires ssl.cert & ssl.key options");
 		
-		this.port = port ?? (this.isHTTPS ? 443 : 80);
+		this.port = typeof port == "string" ? Number.parseInt(port) : port ?? (this.isHTTPS ? 443 : 80);
 		
 		if (listeners)
 			for (const method of Object.keys(listeners) as ("ALL" | Method)[])
@@ -88,13 +88,13 @@ export class InSiteHTTPServer {
 					ServerResponse: InSiteServerResponse
 				}, this.#requestListener);
 		
-		this.server.listen(port, () => onListen ? onListen() : this.#handleListen());
+		this.server.listen(this.port, () => onListen ? onListen() : this.#handleListen());
 		
 	}
 	
-	isHTTPS = false;
-	port: number;
-	server: http.Server | https.Server;
+	readonly isHTTPS;
+	readonly port;
+	readonly server;
 	
 	#listeners: Record<Method, [ RegExp, Handler ][]> = {
 		POST: [],
