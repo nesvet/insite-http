@@ -17,18 +17,18 @@ const nullExtension = {
 
 export class InSiteStaticMiddleware extends InSiteServerMiddleware {
 	constructor({
-		src = "",
+		src = "public",
 		urlPrefix = "",
 		requestRegExp,
 		extensions = defaultExtensions,
 		resolved,
 		restricted,
-		preloaded
+		preloaded = "default"
 	}: Options = {}) {
 		super();
 		
 		if (!path.isAbsolute(src)) {
-			const [ ,entryPoint ] = process.argv;
+			const [ , entryPoint ] = process.argv;
 			src = path.resolve(fs.statSync(entryPoint).isDirectory() ? entryPoint : path.dirname(entryPoint), src);
 		}
 		

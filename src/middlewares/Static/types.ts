@@ -7,5 +7,5 @@ export type Options = {
 	extensions?: Extension[];
 	resolved?: Resolvee[];
 	restricted?: string[];
-	preloaded?: "default" | string[];
+	preloaded?: "default" | null | string[];
 };
