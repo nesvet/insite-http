@@ -10,7 +10,7 @@ new Conveyer([
 	new ESBuild({
 		entryPoints: [ "src/index.ts" ],
 		outfile: path.resolve(distDir, "index.js"),
-		external: true,
+		external: [ true, "insite-*" ],
 		platform: "node",
 		format: "esm",
 		sourcemap: true,
