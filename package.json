@@ -1,6 +1,6 @@
 {
   "name": "insite-http",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "inSite HTTPS server",
   "type": "module",
   "main": "./dist/index.js",
