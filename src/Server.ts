@@ -23,6 +23,10 @@ const {
 	INSITE_HTTP_SSL_KEY
 } = process.env;
 
+function isRequestMethodAccepted(requestMethod: string | undefined, listeners: Record<string, unknown>): requestMethod is Method {
+	return Boolean(requestMethod && listeners[requestMethod]);
+}
+
 
 export class InSiteHTTPServer {
 	constructor({
@@ -114,8 +118,8 @@ export class InSiteHTTPServer {
 		response[inSiteServerSymbol] = this;
 		response[inSiteRequestSymbol] = request;
 		
-		if (!("status" in request))
-			for (const [ regExp, handler ] of this.#listeners[request.method as Method])
+		if (!("status" in request) && isRequestMethodAccepted(request.method, this.#listeners))
+			for (const [ regExp, handler ] of this.#listeners[request.method])
 				if (regExp.test(request.url!) && await handler(request, response) !== false)
 					return;
 		
