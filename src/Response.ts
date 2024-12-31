@@ -9,39 +9,39 @@ export class InSiteServerResponse<Request extends IncomingMessage = IncomingMess
 	[inSiteServerSymbol]!: InSiteHTTPServer;
 	[inSiteRequestSymbol]!: IncomingMessage;
 	
-	error(statusCode: number, params?: ErrorParams) {
+	error(statusCode: number, params?: ErrorParams | string) {
 		return this[inSiteServerSymbol]._throw(this, statusCode, params);
 	}
 	
-	badRequest(params?: ErrorParams) {
+	badRequest(params?: ErrorParams | string) {
 		return this.error(400, params);
 	}
 	
-	unauthorized(params?: ErrorParams) {
+	unauthorized(params?: ErrorParams | string) {
 		return this.error(401, params);
 	}
 	
-	forbidden(params?: ErrorParams) {
+	forbidden(params?: ErrorParams | string) {
 		return this.error(403, params);
 	}
 	
-	notFound(params?: ErrorParams) {
+	notFound(params?: ErrorParams | string) {
 		return this.error(404, params);
 	}
 	
-	requestTimeout(params?: ErrorParams) {
+	requestTimeout(params?: ErrorParams | string) {
 		return this.error(408, params);
 	}
 	
-	gone(params?: ErrorParams) {
+	gone(params?: ErrorParams | string) {
 		return this.error(410, params);
 	}
 	
-	internalServerError(params?: ErrorParams) {
+	internalServerError(params?: ErrorParams | string) {
 		return this.error(500, params);
 	}
 	
-	serviceUnavailable(params?: ErrorParams) {
+	serviceUnavailable(params?: ErrorParams | string) {
 		return this.error(503, params);
 	}
 	
