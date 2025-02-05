@@ -1,43 +1,34 @@
-import fs from "node:fs";
-import http, { type IncomingMessage } from "node:http";
-import https from "node:https";
+import type http from "node:http";
+import type https from "node:https";
+import { createServer, resolveSSL, showServerListeningMessage } from "insite-common/backend";
 import { InSiteServerMiddleware } from "./Middleware";
 import { InSiteServerResponse } from "./Response";
 import { inSiteRequestSymbol, inSiteServerSymbol } from "./symbols";
 import {
-	ErrorParams,
-	Handler,
 	isMiddlewareMethodMap,
 	isMiddlewareRegExpStringMap,
 	isMiddlewareTuple,
 	isMiddlewareTupleOrArray,
-	Method,
-	Middleware,
-	Options,
-	RegExpOrString
+	isRequestMethodAccepted,
+	isServerServer,
+	type ErrorParams,
+	type Handler,
+	type Listener,
+	type Method,
+	type Middleware,
+	type Options,
+	type RegExpOrString
 } from "./types";
-
-
-const {
-	INSITE_HTTP_SSL_CERT,
-	INSITE_HTTP_SSL_KEY
-} = process.env;
-
-function isRequestMethodAccepted(requestMethod: string | undefined, listeners: Record<string, unknown>): requestMethod is Method {
-	return Boolean(requestMethod && listeners[requestMethod]);
-}
 
 
 export class InSiteHTTPServer {
 	constructor({
 		port,
 		ssl,
-		https: isHTTPS = !!ssl,
 		listeners,
 		errors,
-		server = {},
-		onListen
-	}: Options, middlewares: Middleware[] = []) {
+		server
+	}: Options, middlewares: (Middleware | false | null | undefined)[] = []) {
 		
 		if (isServerServer(server)) {
 			this.server = server;
@@ -76,29 +67,26 @@ export class InSiteHTTPServer {
 		
 		if (middlewares)
 			for (const middleware of middlewares)
-				this.addMiddleware(middleware);
+				if (middleware)
+					this.addMiddleware(middleware);
 		
-		this.server =
-			this.isHTTPS ?
-				https.createServer({
-					...server,
-					...ssl,
-					ServerResponse: InSiteServerResponse
-				}, this.#requestListener) :
-				http.createServer({
-					...server,
-					ServerResponse: InSiteServerResponse
-				}, this.#requestListener);
-		
-		this.server.listen(this.port, () => onListen ? onListen() : this.#handleListen());
+		this.server.on("request", this.#requestListener);
 		
 	}
 	
-	readonly isHTTPS;
-	readonly port;
-	readonly server;
+	icon = "🕸️ ";
+	name = "HTTP";
+	get protocol() {
+		return `http${this.isS ? "s" : ""}`;
+	}
 	
-	#listeners: Record<Method, [ RegExp, Handler ][]> = {
+	server;
+	
+	get isS() {
+		return "setSecureContext" in this.server;
+	}
+	
+	#listeners: Record<Method, Listener[]> = {
 		POST: [],
 		GET: [],
 		PUT: [],
@@ -106,13 +94,7 @@ export class InSiteHTTPServer {
 		DELETE: []
 	};
 	
-	#handleListen() {
-		
-		console.info(`🌐 inSite HTTP${this.isHTTPS ? "S" : ""} Server is listening on`, this.port);
-		
-	}
-	
-	#requestListener = async (request: IncomingMessage, response: InSiteServerResponse) => {
+	#requestListener = async (request: http.IncomingMessage, response: InSiteServerResponse) => {
 		response[inSiteServerSymbol] = this;
 		response[inSiteRequestSymbol] = request;
 		
@@ -178,7 +160,7 @@ export class InSiteHTTPServer {
 		}) : response;
 	}
 	
-	addRequestListener(method: "ALL" | Method, regExp: RegExpOrString, handler: Handler) {
+	addRequestListener(method: Method | "ALL", regExp: RegExpOrString, handler: Handler) {
 		if (typeof regExp == "string")
 			regExp = new RegExp(regExp);
 		
@@ -241,6 +223,15 @@ export class InSiteHTTPServer {
 		this.addRequestListener("DELETE", regExp, handler);
 		
 		return this;
+	}
+	
+	
+	static makeProps({ ssl, server }: Options): http.ServerOptions | https.ServerOptions {
+		return {
+			...resolveSSL(ssl),
+			ServerResponse: InSiteServerResponse,
+			...server
+		};
 	}
 	
 }

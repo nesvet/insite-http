@@ -12,10 +12,7 @@ export class InSiteStaticServer extends InSiteHTTPServer {
 		
 	}
 	
-	handleListen() {
-		
-		console.info(`🛒 inSite Static HTTP${this.isHTTPS ? "S" : ""} Server is listening on`, this.port);
-		
-	}
+	name = "Static";
+	icon = "🛒";
 	
 }

@@ -1,35 +1,31 @@
-import type {
-	ServerOptions as HTTPServerOptions,
-	IncomingMessage,
-	OutgoingHttpHeader,
-	OutgoingHttpHeaders
-} from "node:http";
-import type { ServerOptions as HTTPSServerOptions } from "node:https";
-import { InSiteServerMiddleware } from "./Middleware";
+import type http from "node:http";
+import type https from "node:https";
+import type { InSiteServerMiddleware } from "./Middleware";
 import type { InSiteServerResponse } from "./Response";
 
 
 export type ErrorParams = {
-	headers?: OutgoingHttpHeader[] | OutgoingHttpHeaders;
+	headers?: http.OutgoingHttpHeader[] | http.OutgoingHttpHeaders;
 	content: string;
-	handler?(request: IncomingMessage, response: InSiteServerResponse, errorParams: { statusCode: number } & Omit<ErrorParams, "handler">): InSiteServerResponse;
+	handler?(request: http.IncomingMessage, response: InSiteServerResponse, errorParams: Omit<ErrorParams, "handler"> & { statusCode: number }): InSiteServerResponse;
 };
 
 export type Method = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
 
-export type Handler = (request: IncomingMessage, response: InSiteServerResponse) => unknown;
+export type Handler = (request: http.IncomingMessage, response: InSiteServerResponse) => unknown;
+
+export type Listener = [ RegExp, Handler ];
 
 export type Options = {
-	port?: number | string;
 	ssl?: {
 		cert: Buffer | string;
 		key: Buffer | string;
 	};
+	port?: number | string;
 	https?: boolean;
-	listeners?: Record<"ALL" | Method, [ RegExp, Handler ][]>;
+	listeners?: Partial<Record<"ALL" | Method, Listener[]>>;
 	errors?: Record<"default" | number, ErrorParams>;
-	server?: HTTPServerOptions | HTTPSServerOptions;
-	onListen?: () => void;
+	server?: http.Server | http.ServerOptions | https.Server | https.ServerOptions;
 };
 
 export type RegExpOrString = RegExp | string;
@@ -61,4 +57,12 @@ export function isMiddlewareTupleOrArray(middleware: Middleware): middleware is 
 
 export function isMiddlewareTuple(middleware: MiddlewareTuple | MiddlewareTuple[]): middleware is MiddlewareTuple {
 	return !Array.isArray(middleware);
+}
+
+export function isRequestMethodAccepted(requestMethod: string | undefined, listeners: Record<string, unknown>): requestMethod is Method {
+	return Boolean(requestMethod && listeners[requestMethod]);
+}
+
+export function isServerServer(serverOrOptions: Options["server"]): serverOrOptions is http.Server | https.Server {
+	return !!serverOrOptions && "emit" in serverOrOptions;
 }
