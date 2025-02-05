@@ -60,8 +60,8 @@ export class InSiteHTTPServer {
 		}
 		
 		if (listeners)
-			for (const method of Object.keys(listeners) as ("ALL" | Method)[])
-				for (const [ regExp, handler ] of listeners[method])
+			for (const [ method, methodListeners ] of Object.entries(listeners) as [ Method | "ALL", Listener[] ][])
+				for (const [ regExp, handler ] of methodListeners)
 					this.addRequestListener(method, regExp, handler);
 		
 		if (errors)
