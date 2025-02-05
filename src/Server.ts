@@ -39,27 +39,25 @@ export class InSiteHTTPServer {
 		onListen
 	}: Options, middlewares: Middleware[] = []) {
 		
-		this.isHTTPS = !!isHTTPS;
-		
-		if (this.isHTTPS && !ssl && INSITE_HTTP_SSL_CERT && INSITE_HTTP_SSL_KEY)
-			ssl = {
-				cert: INSITE_HTTP_SSL_CERT,
-				key: INSITE_HTTP_SSL_KEY
-			};
-		
-		if (ssl) {
-			if (typeof ssl.cert == "string" && !/^-{3,}BEGIN/.test(ssl.cert))
-				try {
-					ssl.cert = fs.readFileSync(ssl.cert);
-				} catch {}
-			if (typeof ssl.key == "string" && !/^-{3,}BEGIN/.test(ssl.key))
-				try {
-					ssl.key = fs.readFileSync(ssl.key);
-				} catch {}
-		} else if (this.isHTTPS)
-			console.warn("⚠️ HTTPS server requires ssl.cert & ssl.key options");
-		
-		this.port = typeof port == "string" ? Number.parseInt(port) : port ?? (this.isHTTPS ? 443 : 80);
+		if (isServerServer(server)) {
+			this.server = server;
+			
+			new Promise<void>(resolve => void (
+				server.listening ?
+					resolve() :
+					server.on("listening", resolve)
+			)).then(() => showServerListeningMessage(this));
+			
+		} else {
+			this.server = createServer(InSiteHTTPServer.makeProps({ ssl, server }));
+			
+			this.server.listen(
+				typeof port == "string" ?
+					Number.parseInt(port) :
+					port ?? (this.isS ? 443 : 80),
+				() => showServerListeningMessage(this)
+			);
+		}
 		
 		if (listeners)
 			for (const method of Object.keys(listeners) as ("ALL" | Method)[])
