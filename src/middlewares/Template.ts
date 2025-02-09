@@ -70,7 +70,7 @@ export class InSiteTemplateMiddleware extends InSiteServerMiddleware {
 	#rootId;
 	#html;
 	
-	#handler = (request: IncomingMessage, response: InSiteServerResponse) =>
+	#handler = (request: Request, response: Response) =>
 		handleRequestCompressed(request, response, headers, this.#html);
 	
 }

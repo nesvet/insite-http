@@ -1,10 +1,8 @@
 import fs from "node:fs";
-import { IncomingMessage } from "node:http";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { brotliPreloadSync, getCompressionStreamByEncoding, gzipPreloadSync } from "../../compression";
-import { InSiteServerMiddleware } from "../../Middleware";
-import { InSiteServerResponse } from "../../Response";
+import type { Request } from "../../Request";
 import { defaultExtensions } from "./extensions";
 import { defaultPreloaded } from "./preloaded";
 import { Extension, Options } from "./types";
@@ -113,8 +111,8 @@ export class InSiteStaticMiddleware extends InSiteServerMiddleware {
 		
 	}
 	
-	#handler = (request: IncomingMessage, response: InSiteServerResponse) => {
-		let fileName = decodeURI(request.url!).replace(this.#urlPrefixRegExp, "").replaceAll("../", "");
+	#handler = (request: Request, response: Response) => {
+		let fileName = decodeURI(request.url).replace(this.#urlPrefixRegExp, "").replaceAll("../", "");
 		fileName = this.#resolved.get(fileName) ?? path.join(this.#src, fileName);
 		
 		if (this.#restricted.has(fileName))

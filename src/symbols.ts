@@ -1,2 +1,1 @@
-export const inSiteServerSymbol = Symbol("inSiteServer");
-export const inSiteRequestSymbol = Symbol("inSiteRequest");
+export const requestSymbol = Symbol("request");

@@ -7,12 +7,12 @@ import type { InSiteServerResponse } from "./Response";
 export type ErrorParams = {
 	headers?: http.OutgoingHttpHeader[] | http.OutgoingHttpHeaders;
 	content: string;
-	handler?(request: http.IncomingMessage, response: InSiteServerResponse, errorParams: Omit<ErrorParams, "handler"> & { statusCode: number }): InSiteServerResponse;
+	handler?(request: Request, response: Response, errorParams: Omit<ErrorParams, "handler"> & { statusCode: number }): Response;
 };
 
 export type Method = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
 
-export type Handler = (request: http.IncomingMessage, response: InSiteServerResponse) => unknown;
+export type Handler = (request: Request, response: Response) => unknown;
 
 export type Listener = [ RegExp, Handler ];
 
@@ -30,18 +30,9 @@ export type Options = {
 
 export type RegExpOrString = RegExp | string;
 
-type MiddlewareTuple = readonly [ Method, RegExpOrString, Handler ] | readonly [ RegExpOrString, Handler ];
+export type RequestParams = Record<string, string> & [ undefined, ...string[] ];
 
-type MiddlewareRegExpStringMap = Record<string, Handler>;
-
-type MiddlewareMethodMap = Record<Method, Record<string, Handler>>;
-
-export type Middleware =
-	InSiteServerMiddleware |
-	MiddlewareMethodMap |
-	MiddlewareRegExpStringMap |
-	MiddlewareTuple |
-	MiddlewareTuple[];
+export type RequestQueryParams = Record<string, string>;
 
 export function isMiddlewareMethodMap(middleware: Middleware): middleware is MiddlewareMethodMap {
 	return typeof Object.values(middleware)[0] == "object";

@@ -1,9 +1,7 @@
 import type http from "node:http";
 import type https from "node:https";
 import { createServer, resolveSSL, showServerListeningMessage } from "insite-common/backend";
-import { InSiteServerMiddleware } from "./Middleware";
-import { InSiteServerResponse } from "./Response";
-import { inSiteRequestSymbol, inSiteServerSymbol } from "./symbols";
+import { matches, Request } from "./Request";
 import {
 	isMiddlewareMethodMap,
 	isMiddlewareRegExpStringMap,
@@ -229,7 +227,7 @@ export class InSiteHTTPServer {
 	static makeProps({ ssl, server }: Options): http.ServerOptions | https.ServerOptions {
 		return {
 			...resolveSSL(ssl),
-			ServerResponse: InSiteServerResponse,
+			IncomingMessage: Request,
 			...server
 		};
 	}
