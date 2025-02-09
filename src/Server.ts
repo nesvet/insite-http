@@ -171,8 +171,7 @@ export class HTTPServer {
 		return this;
 	}
 	
-	addMiddleware(middleware: Middleware) {
-		if (middleware instanceof InSiteServerMiddleware) {
+		if (middleware instanceof ClassMiddleware) {
 			for (const [ method, regExpOrStringArrayMap ] of Object.entries(middleware.listeners))
 				for (const [ regExpOrString, handler ] of regExpOrStringArrayMap)
 					this.addRequestListener(method as Method, regExpOrString, handler);
@@ -228,6 +227,7 @@ export class HTTPServer {
 		return {
 			...resolveSSL(ssl),
 			IncomingMessage: Request,
+			ServerResponse: Response,
 			...server
 		};
 	}

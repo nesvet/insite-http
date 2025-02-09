@@ -1,9 +1,16 @@
-import { type IncomingMessage, ServerResponse } from "node:http";
-import { inSiteRequestSymbol, inSiteServerSymbol } from "./symbols";
-import type { InSiteHTTPServer } from "./Server";
+import { OutgoingHttpHeader, OutgoingHttpHeaders, ServerResponse } from "node:http";
+import { Readable } from "node:stream";
+import { requestSymbol, serverSymbol } from "./symbols";
+import type { Request } from "./Request";
+import type { HTTPServer } from "./Server";
 import type { ErrorParams } from "./types";
 
 
+export class Response extends ServerResponse<Request> {
+	
+	[serverSymbol]!: HTTPServer;
+	[requestSymbol]!: Request;
+	
 	/** End response with a plain text */
 	text(body: string) {
 		return this.writeHead(200, {
@@ -43,7 +50,7 @@ import type { ErrorParams } from "./types";
 	// messagePack() {
 	// }
 	error(statusCode: number, params?: ErrorParams | string) {
-		return this[inSiteServerSymbol]._throw(this, statusCode, params);
+		return this[serverSymbol]._throw(this, statusCode, params);
 	}
 	
 	badRequest(params?: ErrorParams | string) {
