@@ -4,11 +4,44 @@ import type { InSiteHTTPServer } from "./Server";
 import type { ErrorParams } from "./types";
 
 
-export class InSiteServerResponse<Request extends IncomingMessage = IncomingMessage> extends ServerResponse<Request> {
+	/** End response with a plain text */
+	text(body: string) {
+		return this.writeHead(200, {
+			"Content-Type": "text/plain; charset=utf-8",
+			"Content-Length": Buffer.byteLength(body)
+		}).end(body);
+	}
 	
-	[inSiteServerSymbol]!: InSiteHTTPServer;
-	[inSiteRequestSymbol]!: IncomingMessage;
+	/** End response with a JSON string */
+	json(value: Parameters<JSON["stringify"]>[0]) {
+		const body = JSON.stringify(value);
+		
+		return this.writeHead(200, {
+			"Content-Type": "application/json; charset=utf-8",
+			"Content-Length": Buffer.byteLength(body)
+		}).end(body);
+	}
 	
+	/** End response with an URL-encoded string */
+	urlEncoded(params: ConstructorParameters<typeof URLSearchParams>[0]) {
+		const body = new URLSearchParams(params).toString();
+		
+		return this.writeHead(200, {
+			"Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+			"Content-Length": Buffer.byteLength(body)
+		}).end(body);
+	}
+	
+	/** End response with a stream */
+	stream(stream: Readable, headers?: OutgoingHttpHeader[] | OutgoingHttpHeaders) {
+		this.writeHead(200, headers);
+		
+		return stream.pipe(this);
+	}
+	
+	// TODO:
+	// messagePack() {
+	// }
 	error(statusCode: number, params?: ErrorParams | string) {
 		return this[inSiteServerSymbol]._throw(this, statusCode, params);
 	}
