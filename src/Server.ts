@@ -76,14 +76,19 @@ export class HTTPServer {
 		
 	}
 	
+	/** Server icon */
 	icon = "🕸️ ";
+	
+	/** Server name */
 	name = "HTTP";
 	get protocol() {
 		return `http${this.isS ? "s" : ""}`;
 	}
 	
+	/** Node.js http(s) server object */
 	server;
 	
+	/** Does the server use SSL */
 	get isS() {
 		return "setSecureContext" in this.server;
 	}
@@ -162,6 +167,7 @@ export class HTTPServer {
 		}) : response;
 	}
 	
+	/** Add request listener */
 	addRequestListener(method: Method | "ALL", regExp: RegExpOrString, handler: Handler) {
 		if (typeof regExp == "string")
 			regExp = pathToRegExp(regExp);
@@ -212,24 +218,28 @@ export class HTTPServer {
 		return this;
 	}
 	
+	/** Add GET request listener */
 	get(regExp: RegExpOrString, handler: Handler) {
 		this.addRequestListener("GET", regExp, handler);
 		
 		return this;
 	}
 	
+	/** Add PUT request listener */
 	put(regExp: RegExpOrString, handler: Handler) {
 		this.addRequestListener("PUT", regExp, handler);
 		
 		return this;
 	}
 	
+	/** Add PATCH request listener */
 	patch(regExp: RegExpOrString, handler: Handler) {
 		this.addRequestListener("PATCH", regExp, handler);
 		
 		return this;
 	}
 	
+	/** Add DELETE request listener */
 	delete(regExp: RegExpOrString, handler: Handler) {
 		this.addRequestListener("DELETE", regExp, handler);
 		
@@ -237,6 +247,7 @@ export class HTTPServer {
 	}
 	
 	
+	/** Make props for Node.js http(s).createServer method */
 	static makeProps({ ssl, server }: Options) {
 		return {
 			...resolveSSL(ssl),

@@ -49,38 +49,48 @@ export class Response extends ServerResponse<Request> {
 	// TODO:
 	// messagePack() {
 	// }
+	
+	/** End response with an error */
 	error(statusCode: number, params?: ErrorParams | string) {
 		return this[serverSymbol]._throw(this, statusCode, params);
 	}
 	
+	/** End response with the 400 Bad Request */
 	badRequest(params?: ErrorParams | string) {
 		return this.error(400, params);
 	}
 	
+	/** End response with the 401 Unauthorized */
 	unauthorized(params?: ErrorParams | string) {
 		return this.error(401, params);
 	}
 	
+	/** End response with the 403 Forbidden */
 	forbidden(params?: ErrorParams | string) {
 		return this.error(403, params);
 	}
 	
+	/** End response with the 404 Not Found */
 	notFound(params?: ErrorParams | string) {
 		return this.error(404, params);
 	}
 	
+	/** End response with the 408 Request Timeout */
 	requestTimeout(params?: ErrorParams | string) {
 		return this.error(408, params);
 	}
 	
+	/** End response with the 410 Gone */
 	gone(params?: ErrorParams | string) {
 		return this.error(410, params);
 	}
 	
+	/** End response with the 500 Internal Server Error */
 	internalServerError(params?: ErrorParams | string) {
 		return this.error(500, params);
 	}
 	
+	/** End response with the 503 Service Unavailable */
 	serviceUnavailable(params?: ErrorParams | string) {
 		return this.error(503, params);
 	}
