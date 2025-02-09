@@ -1,22 +1,26 @@
 import type http from "node:http";
 import type https from "node:https";
 import { createServer, resolveSSL, showServerListeningMessage } from "insite-common/backend";
+import { ClassMiddleware } from "./Middleware";
 import { matches, Request } from "./Request";
+import { Response } from "./Response";
+import { requestSymbol, serverSymbol } from "./symbols";
 import {
-	isMiddlewareMethodMap,
-	isMiddlewareRegExpStringMap,
-	isMiddlewareTuple,
-	isMiddlewareTupleOrArray,
+	isMethod,
 	isRequestMethodAccepted,
 	isServerServer,
+	isTupleMiddleware,
+	isTupleMiddlewareOrArray,
+	Middleware,
 	type ErrorParams,
+	type GenericMiddleware,
 	type Handler,
 	type Listener,
 	type Method,
-	type Middleware,
 	type Options,
 	type RegExpOrString
 } from "./types";
+import { pathToRegExp } from "./utils";
 
 
 export class HTTPServer {
@@ -26,7 +30,7 @@ export class HTTPServer {
 		listeners,
 		errors,
 		server
-	}: Options, middlewares: (Middleware | false | null | undefined)[] = []) {
+	}: Options, middlewares: (GenericMiddleware | false | null | undefined)[] = []) {
 		
 		if (isServerServer(server)) {
 			this.server = server;
@@ -98,7 +102,7 @@ export class HTTPServer {
 		
 		if (!("status" in request) && isRequestMethodAccepted(request.method, this.#listeners))
 			for (const [ regExp, handler ] of this.#listeners[request.method])
-				if (regExp.test(request.url!) && await handler(request, response) !== false)
+				if (matches(request, regExp) && await handler(request, response) !== false)
 					return;
 		
 		response.notFound();
@@ -160,7 +164,7 @@ export class HTTPServer {
 	
 	addRequestListener(method: Method | "ALL", regExp: RegExpOrString, handler: Handler) {
 		if (typeof regExp == "string")
-			regExp = new RegExp(regExp);
+			regExp = pathToRegExp(regExp);
 		
 		if (method && method !== "ALL")
 			this.#listeners[method]?.push([ regExp, handler ]);
@@ -171,27 +175,37 @@ export class HTTPServer {
 		return this;
 	}
 	
+	/** Add middleware */
+	addMiddleware(middleware: GenericMiddleware) {
 		if (middleware instanceof ClassMiddleware) {
 			for (const [ method, regExpOrStringArrayMap ] of Object.entries(middleware.listeners))
 				for (const [ regExpOrString, handler ] of regExpOrStringArrayMap)
 					this.addRequestListener(method as Method, regExpOrString, handler);
 			middleware.bindTo?.(this);
-		} else if (isMiddlewareTupleOrArray(middleware)) {
-			if (isMiddlewareTuple(middleware))
+		} else if (isTupleMiddlewareOrArray(middleware)) {
+			if (isTupleMiddleware(middleware))
 				middleware = [ middleware ];
+			
 			for (const params of middleware)
 				this.addRequestListener(...params.length === 2 ? [ "GET", ...params ] as const : params);
-		} else if (isMiddlewareRegExpStringMap(middleware))
-			for (const [ key, value ] of Object.entries(middleware))
-				this.addRequestListener("GET", key, value);
-		else if (isMiddlewareMethodMap(middleware))
-			for (const [ method, regExpStringMap ] of Object.entries(middleware))
-				for (const [ regExpString, handler ] of Object.entries(regExpStringMap))
-					this.addRequestListener(method as Method, regExpString, handler);
+		} else
+			this.#parseMappedMiddleware(middleware);
 		
 		return this;
 	}
 	
+	#parseMappedMiddleware(middleware: Middleware, method: Method | "ALL" = "GET", prefix: string = "") {
+		for (const [ key, value ] of Object.entries(middleware))
+			if (typeof value == "function")
+				this.addRequestListener(method, `${prefix}${key}`, value);
+			else if (isMethod(key))
+				this.#parseMappedMiddleware(value, key, prefix);
+			else
+				this.#parseMappedMiddleware(value, method, `${prefix}${key}`);
+		
+	}
+	
+	/** Add POST request listener */
 	post(regExp: RegExpOrString, handler: Handler) {
 		this.addRequestListener("POST", regExp, handler);
 		

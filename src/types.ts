@@ -1,9 +1,11 @@
 import type http from "node:http";
 import type https from "node:https";
+import type { ClassMiddleware } from "./Middleware";
 import type { Request } from "./Request";
 import type { Response } from "./Response";
 
 
+const METHODS = [ "DELETE", "GET", "PATCH", "POST", "PUT" ] as const;
 
 
 export type ErrorParams = {
@@ -12,7 +14,11 @@ export type ErrorParams = {
 	handler?(request: Request, response: Response, errorParams: Omit<ErrorParams, "handler"> & { statusCode: number }): Response;
 };
 
-export type Method = "DELETE" | "GET" | "PATCH" | "POST" | "PUT";
+export type Method = typeof METHODS[number];
+
+export function isMethod(string: string): string is Method | "ALL" {
+	return METHODS.includes(string as Method) || string === "ALL";
+}
 
 export type Handler = (request: Request, response: Response) => unknown;
 
@@ -36,19 +42,27 @@ export type RequestParams = Record<string, string> & [ undefined, ...string[] ];
 
 export type RequestQueryParams = Record<string, string>;
 
-export function isMiddlewareMethodMap(middleware: Middleware): middleware is MiddlewareMethodMap {
-	return typeof Object.values(middleware)[0] == "object";
-}
+export type Middleware = {
+	[K: string]: Handler | Middleware;
+} | {
+	[K: {} & string]: Handler | Middleware;
+} | {
+	[K in Method | "ALL"]?: Middleware;
+};
 
-export function isMiddlewareRegExpStringMap(middleware: Middleware): middleware is MiddlewareRegExpStringMap {
-	return typeof Object.values(middleware)[0] == "function";
-}
+export type TupleMiddleware = readonly [ Method, RegExpOrString, Handler ] | readonly [ RegExpOrString, Handler ];
 
-export function isMiddlewareTupleOrArray(middleware: Middleware): middleware is MiddlewareTuple | MiddlewareTuple[] {
+export type GenericMiddleware =
+	ClassMiddleware |
+	Middleware |
+	TupleMiddleware |
+	TupleMiddleware[];
+
+export function isTupleMiddlewareOrArray(middleware: GenericMiddleware): middleware is TupleMiddleware | TupleMiddleware[] {
 	return Array.isArray(middleware);
 }
 
-export function isMiddlewareTuple(middleware: MiddlewareTuple | MiddlewareTuple[]): middleware is MiddlewareTuple {
+export function isTupleMiddleware(middleware: TupleMiddleware | TupleMiddleware[]): middleware is TupleMiddleware {
 	return !Array.isArray(middleware);
 }
 
