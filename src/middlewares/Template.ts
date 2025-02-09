@@ -1,8 +1,8 @@
-import { IncomingMessage } from "node:http";
 import { isEmpty } from "@nesvet/n";
 import { handleRequestCompressed } from "../compression";
-import { InSiteServerMiddleware } from "../Middleware";
-import { InSiteServerResponse } from "../Response";
+import { ClassMiddleware } from "../Middleware";
+import type { Request } from "../Request";
+import type { Response } from "../Response";
 
 
 const { INSITE_TITLE } = process.env;
@@ -19,14 +19,14 @@ type Options = {
 	requestRegExp?: RegExp;
 	globals?: Record<string, unknown>;
 	title?: string;
-	css?: string | string[];
+	css?: string[] | string;
 	rootId?: string;
 };
 
 export type { Options as TemplateMiddlewareOptions };
 
 
-export class InSiteTemplateMiddleware extends InSiteServerMiddleware {
+export class TemplateMiddleware extends ClassMiddleware {
 	constructor({
 		requestRegExp = /.*/,
 		globals = {},

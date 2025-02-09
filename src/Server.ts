@@ -19,7 +19,7 @@ import {
 } from "./types";
 
 
-export class InSiteHTTPServer {
+export class HTTPServer {
 	constructor({
 		port,
 		ssl,
@@ -38,7 +38,7 @@ export class InSiteHTTPServer {
 			)).then(() => showServerListeningMessage(this));
 			
 		} else {
-			this.server = createServer(InSiteHTTPServer.makeProps({ ssl, server }));
+			this.server = createServer(HTTPServer.makeProps({ ssl, server }));
 			
 			this.server.listen(
 				typeof port == "string" ?
@@ -92,9 +92,9 @@ export class InSiteHTTPServer {
 		DELETE: []
 	};
 	
-	#requestListener = async (request: http.IncomingMessage, response: InSiteServerResponse) => {
-		response[inSiteServerSymbol] = this;
-		response[inSiteRequestSymbol] = request;
+	#requestListener = async (request: Request, response: Response) => {
+		response[serverSymbol] = this;
+		response[requestSymbol] = request;
 		
 		if (!("status" in request) && isRequestMethodAccepted(request.method, this.#listeners))
 			for (const [ regExp, handler ] of this.#listeners[request.method])
@@ -139,7 +139,7 @@ export class InSiteHTTPServer {
 		}
 	};
 	
-	_throw(response: InSiteServerResponse, statusCode: number, params?: ErrorParams | string) {
+	_throw(response: Response, statusCode: number, params?: ErrorParams | string) {
 		if (typeof params == "string")
 			params = { content: params };
 		
@@ -152,7 +152,7 @@ export class InSiteHTTPServer {
 			...params
 		};
 		
-		return handler ? handler(response[inSiteRequestSymbol], response, {
+		return handler ? handler(response[requestSymbol], response, {
 			...restParams,
 			statusCode
 		}) : response;

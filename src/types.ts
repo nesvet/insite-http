@@ -1,7 +1,9 @@
 import type http from "node:http";
 import type https from "node:https";
-import type { InSiteServerMiddleware } from "./Middleware";
-import type { InSiteServerResponse } from "./Response";
+import type { Request } from "./Request";
+import type { Response } from "./Response";
+
+
 
 
 export type ErrorParams = {

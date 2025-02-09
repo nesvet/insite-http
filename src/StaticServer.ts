@@ -1,12 +1,12 @@
-import { InSiteStaticMiddleware, StaticMiddlewareOptions } from "./middlewares/Static";
-import { InSiteHTTPServer } from "./Server";
-import { Middleware, Options } from "./types";
+import { StaticMiddleware, StaticMiddlewareOptions } from "./middlewares/Static";
+import { HTTPServer } from "./Server";
+import { GenericMiddleware, Options } from "./types";
 
 
-export class InSiteStaticServer extends InSiteHTTPServer {
-	constructor(options: StaticMiddlewareOptions, serverOptions: Options, middlewares: Middleware[] = []) {
+export class StaticServer extends HTTPServer {
+	constructor(options: StaticMiddlewareOptions, serverOptions: Options, middlewares: GenericMiddleware[] = []) {
 		super(serverOptions, [
-			new InSiteStaticMiddleware(options),
+			new StaticMiddleware(options),
 			...middlewares
 		]);
 		

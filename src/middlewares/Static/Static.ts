@@ -2,10 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { brotliPreloadSync, getCompressionStreamByEncoding, gzipPreloadSync } from "../../compression";
+import { ClassMiddleware } from "../../Middleware";
 import type { Request } from "../../Request";
+import type { Response } from "../../Response";
 import { defaultExtensions } from "./extensions";
 import { defaultPreloaded } from "./preloaded";
-import { Extension, Options } from "./types";
+import type { Extension, Options } from "./types";
 
 
 const nullExtension = {
@@ -13,7 +15,7 @@ const nullExtension = {
 };
 
 
-export class InSiteStaticMiddleware extends InSiteServerMiddleware {
+export class StaticMiddleware extends ClassMiddleware {
 	constructor({
 		src = "public",
 		urlPrefix = "",

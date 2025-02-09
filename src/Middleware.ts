@@ -1,8 +1,8 @@
-import { InSiteHTTPServer } from "./Server";
+import { HTTPServer } from "./Server";
 import { Handler, Method, RegExpOrString } from "./types";
 
 
-export class InSiteServerMiddleware {
+export class ClassMiddleware {
 	listeners!: Partial<Record<Method, [ RegExpOrString, Handler ][]>>;
-	bindTo?(server: InSiteHTTPServer): void;
+	bindTo?(server: HTTPServer): void;
 }
