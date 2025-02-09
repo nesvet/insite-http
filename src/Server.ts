@@ -237,13 +237,13 @@ export class HTTPServer {
 	}
 	
 	
-	static makeProps({ ssl, server }: Options): http.ServerOptions | https.ServerOptions {
+	static makeProps({ ssl, server }: Options) {
 		return {
 			...resolveSSL(ssl),
 			IncomingMessage: Request,
 			ServerResponse: Response,
 			...server
-		};
+		} as http.ServerOptions | https.ServerOptions;
 	}
 	
 }

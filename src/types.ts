@@ -31,7 +31,7 @@ export type Options = {
 	};
 	port?: number | string;
 	https?: boolean;
-	listeners?: Partial<Record<"ALL" | Method, Listener[]>>;
+	listeners?: Partial<Record<Method | "ALL", Listener[]>>;
 	errors?: Record<"default" | number, ErrorParams>;
 	server?: http.Server | http.ServerOptions | https.Server | https.ServerOptions;
 };
