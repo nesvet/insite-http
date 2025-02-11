@@ -25,10 +25,10 @@
   "license": "MIT",
   "dependencies": {
     "@nesvet/n": "^1.1.22",
-    "insite-common": "^2.1.0"
+    "insite-common": "^2.1.2"
   },
   "devDependencies": {
-    "@nesvet/conveyer": "^2.4.2",
+    "@nesvet/conveyer": "^2.4.3",
     "@nesvet/eslint-config": "^2.0.47",
     "@types/node": "^22.13.1",
     "typescript": "^5.7.3"
