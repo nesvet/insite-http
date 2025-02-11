@@ -3,9 +3,9 @@ export type Resolvee = [ string, string ];
 export type Options = {
 	src?: string;
 	urlPrefix?: string;
-	requestRegExp?: RegExp;
+	path?: RegExp;
 	extensions?: Extension[];
 	resolved?: Resolvee[];
 	restricted?: string[];
-	preloaded?: "default" | null | string[];
+	preloaded?: string[] | "default" | null;
 };

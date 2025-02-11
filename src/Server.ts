@@ -101,7 +101,7 @@ export class HTTPServer {
 		DELETE: []
 	};
 	
-	#requestListener = async (request: Request, response: Response) => {
+	#requestListener: Handler = async (request, response) => {
 		response[serverSymbol] = this;
 		response[requestSymbol] = request;
 		

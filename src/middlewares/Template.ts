@@ -1,8 +1,7 @@
 import { isEmpty } from "@nesvet/n";
 import { handleRequestCompressed } from "../compression";
 import { ClassMiddleware } from "../Middleware";
-import type { Request } from "../Request";
-import type { Response } from "../Response";
+import { Handler } from "../types";
 
 
 const { INSITE_TITLE } = process.env;
@@ -16,7 +15,7 @@ const headers = { "Content-Type": "text/html; charset=utf-8" };
 
 
 type Options = {
-	requestRegExp?: RegExp;
+	path?: RegExp;
 	globals?: Record<string, unknown>;
 	title?: string;
 	css?: string[] | string;
@@ -28,7 +27,7 @@ export type { Options as TemplateMiddlewareOptions };
 
 export class TemplateMiddleware extends ClassMiddleware {
 	constructor({
-		requestRegExp = /.*/,
+		path = /.*/,
 		globals = {},
 		title = INSITE_TITLE ?? "inSite",
 		css = [],
@@ -36,9 +35,9 @@ export class TemplateMiddleware extends ClassMiddleware {
 	}: Options = {}) {
 		super();
 		
-		this.listeners = { GET: [
-			[ requestRegExp, this.#handler ]
-		] };
+		this.listeners = {
+			GET: [ [ path, this.#handler ] ]
+		};
 		
 		this.#title = title;
 		this.#css = Array.isArray(css) ? css : [ css ];
@@ -70,7 +69,7 @@ export class TemplateMiddleware extends ClassMiddleware {
 	#rootId;
 	#html;
 	
-	#handler = (request: Request, response: Response) =>
+	#handler: Handler = (request, response) =>
 		handleRequestCompressed(request, response, headers, this.#html);
 	
 }

@@ -11,12 +11,12 @@
 // 	constructor(options = {}) {
 // 		super();
 // 		const {
-// 			requestRegExp = /^\/initials\/?\?/
+// 			path = "/initials"
 // 		} = options;
 
-// 		this.listeners = { GET: [
-// 			[ requestRegExp, this.handler ]
-// 		] };
+// 		this.listeners = {
+// 			GET: [ [ path, this.handler ] ]
+// 		};
 
 // 	}
 

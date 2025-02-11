@@ -4,4 +4,4 @@ export type { Request } from "./Request";
 export type { Response } from "./Response";
 export * from "./Server";
 export * from "./StaticServer";
-export type { GenericMiddleware, Middleware, Options, RequestParams, RequestQueryParams, TupleMiddleware } from "./types";
+export type { GenericMiddleware, Handler as RequestHandler, Middleware, Options, RequestParams, RequestQueryParams, TupleMiddleware } from "./types";

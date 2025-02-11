@@ -3,8 +3,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { brotliPreloadSync, getCompressionStreamByEncoding, gzipPreloadSync } from "../../compression";
 import { ClassMiddleware } from "../../Middleware";
-import type { Request } from "../../Request";
-import type { Response } from "../../Response";
+import type { Handler } from "../../types";
 import { defaultExtensions } from "./extensions";
 import { defaultPreloaded } from "./preloaded";
 import type { Extension, Options } from "./types";
@@ -19,7 +18,7 @@ export class StaticMiddleware extends ClassMiddleware {
 	constructor({
 		src = "public",
 		urlPrefix = "",
-		requestRegExp,
+		path: _path,
 		extensions = defaultExtensions,
 		resolved,
 		restricted,
@@ -60,9 +59,9 @@ export class StaticMiddleware extends ClassMiddleware {
 					this.#preload(fileName);
 		}
 		
-		this.listeners = { GET: [
-			[ requestRegExp ?? new RegExp(`^${path.join("/", this.#urlPrefix, "/")}(\\w[^\\/]*/)*[^\\/]+\\.[^\\/]`), this.#handler ]
-		] };
+		this.listeners = {
+			GET: [ [ _path ?? new RegExp(`^${path.join("/", this.#urlPrefix, "/")}(\\w[^\\/]*/)*[^\\/]+\\.[^\\/]`), this.#handler ] ]
+		};
 		
 	}
 	
@@ -113,7 +112,7 @@ export class StaticMiddleware extends ClassMiddleware {
 		
 	}
 	
-	#handler = (request: Request, response: Response) => {
+	#handler: Handler = (request, response) => {
 		let fileName = decodeURI(request.url).replace(this.#urlPrefixRegExp, "").replaceAll("../", "");
 		fileName = this.#resolved.get(fileName) ?? path.join(this.#src, fileName);
 		
