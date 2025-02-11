@@ -22,7 +22,7 @@ function subPathToRegExpSource(path: string, index = 0): string {
 }
 
 export function pathToRegExp(path: string) {
-	return new RegExp(`^${subPathToRegExpSource(path)}/?$`);
+	return new RegExp(`^${path.startsWith("/") ? "" : "/"}${subPathToRegExpSource(path)}/?$`);
 }
 
 
