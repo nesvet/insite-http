@@ -11,14 +11,15 @@ import {
 	isServerServer,
 	isTupleMiddleware,
 	isTupleMiddlewareOrArray,
-	Middleware,
 	type ErrorParams,
 	type GenericMiddleware,
 	type Handler,
 	type Listener,
 	type Method,
+	type Middleware,
 	type Options,
-	type RegExpOrString
+	type RegExpOrString,
+	type ResponseBody
 } from "./types";
 import { pathToRegExp } from "./utils";
 
@@ -115,56 +116,55 @@ export class HTTPServer {
 	};
 	
 	#errors: Record<"default" | number, ErrorParams> = {
-		400: {
-			content: "Bad Request"
-		},
 		401: {
-			content: "Unauthorized"
+			statusCode: 401,
+			body: "Unauthorized"
 		},
 		403: {
-			content: "Forbidden"
+			statusCode: 403,
+			body: "Forbidden"
 		},
 		404: {
-			content: "Not Found"
+			statusCode: 404,
+			body: "Not Found"
 		},
 		408: {
-			content: "Request Timeout"
+			statusCode: 408,
+			body: "Request Timeout"
 		},
 		410: {
-			content: "Gone"
+			statusCode: 410,
+			body: "Gone"
 		},
 		500: {
-			content: "Internal Server Error"
+			statusCode: 500,
+			body: "Internal Server Error"
 		},
 		503: {
-			content: "Service Unavailable"
+			statusCode: 503,
+			body: "Service Unavailable"
 		},
 		default: {
-			headers: { "Content-Type": "text/plain; charset=utf-8" },
-			content: "",
-			handler(request, response, { statusCode, headers, content }) {
-				return response.writeHead(statusCode, headers).end(content);
+			statusCode: 400,
+			body: "Bad Request",
+			handler(request, response, { statusCode, headers, body }) {
+				return response.give(body, headers, statusCode);
 			}
 		}
 	};
 	
-	_throw(response: Response, statusCode: number, params?: ErrorParams | string) {
-		if (typeof params == "string")
-			params = { content: params };
+	_throw(response: Response, { statusCode, ...restParams }: Omit<ErrorParams, "body"> & { body?: ResponseBody }) {
 		
 		const {
 			handler,
-			...restParams
+			...handlerParams
 		} = {
 			...this.#errors.default,
 			...this.#errors[statusCode],
-			...params
+			...restParams
 		};
 		
-		return handler ? handler(response[requestSymbol], response, {
-			...restParams,
-			statusCode
-		}) : response;
+		return handler!(response[requestSymbol], response, handlerParams);
 	}
 	
 	/** Add request listener */

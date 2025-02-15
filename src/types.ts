@@ -1,18 +1,12 @@
 import type http from "node:http";
 import type https from "node:https";
+import type { Readable } from "node:stream";
 import type { ClassMiddleware } from "./Middleware";
 import type { Request } from "./Request";
 import type { Response } from "./Response";
 
 
 const METHODS = [ "DELETE", "GET", "PATCH", "POST", "PUT" ] as const;
-
-
-export type ErrorParams = {
-	headers?: http.OutgoingHttpHeader[] | http.OutgoingHttpHeaders;
-	content: string;
-	handler?(request: Request, response: Response, errorParams: Omit<ErrorParams, "handler"> & { statusCode: number }): Response;
-};
 
 export type Method = typeof METHODS[number];
 
@@ -73,3 +67,20 @@ export function isRequestMethodAccepted(requestMethod: string | undefined, liste
 export function isServerServer(serverOrOptions: Options["server"]): serverOrOptions is http.Server | https.Server {
 	return !!serverOrOptions && "emit" in serverOrOptions;
 }
+
+export type ResponseHeaders = http.OutgoingHttpHeader[] | http.OutgoingHttpHeaders;
+
+export type JSONResponseBody = Parameters<JSON["stringify"]>[0];
+
+export type UrlEncodedResponseBody = ConstructorParameters<typeof URLSearchParams>[0];
+
+export type ResponseBody = JSONResponseBody | Readable | UrlEncodedResponseBody | string;
+
+export type ErrorParams = {
+	statusCode: number;
+	headers?: ResponseHeaders;
+	body: ResponseBody;
+	handler?: ErrorHandler;
+};
+
+export type ErrorHandler = (request: Request, response: Response, errorParams: Omit<ErrorParams, "handler">) => Response;
