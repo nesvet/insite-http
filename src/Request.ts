@@ -54,9 +54,14 @@ export class RequestBody {
 		});
 	}
 	
+	#bytes?: Uint8Array<ArrayBufferLike>;
+	
 	/** Request body as an Uint8Array */
 	async bytes() {
-		return new TextEncoder().encode(await this.text());
+		
+		this.#bytes ??= new TextEncoder().encode(await this.text());
+		
+		return this.#bytes;
 	}
 	
 	/** Request body as an ArrayBuffer */
@@ -64,14 +69,24 @@ export class RequestBody {
 		return (await this.bytes()).buffer;
 	}
 	
+	#json?: any;
+	
 	/** Request body as a parsed JSON object */
 	async json() {
-		return JSON.parse(await this.text());
+		
+		this.#json ??= JSON.parse(await this.text());
+		
+		return this.#json;
 	}
+	
+	#urlEncoded?: querystring.ParsedUrlQuery;
 	
 	/** Request body as a parsed URL-encoded object */
 	async urlEncoded() {
-		return querystring.parse(await this.text());
+		
+		this.#urlEncoded = querystring.parse(await this.text());
+		
+		return this.#urlEncoded;
 	}
 	
 	// TODO:
