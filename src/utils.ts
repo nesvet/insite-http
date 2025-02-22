@@ -29,8 +29,9 @@ export function pathToRegExp(path: string) {
 const wildcardKeyRegExp = /^__/;
 
 export function extractUrlParams(request: Request<any>): RequestParams {
-	if (request[matchSymbol]) {
-		const match = request[matchSymbol];
+	const match = request[matchSymbol];
+	
+	if (match) {
 		delete request[matchSymbol];
 		
 		const params = [ undefined, ...match.slice(1) ] as RequestParams;
@@ -46,8 +47,8 @@ export function extractUrlParams(request: Request<any>): RequestParams {
 }
 
 
-export function extractQueryParams(request: Request<any>): RequestQueryParams {
-	return request.querystring?.split("&").reduce((queryParams, pair) => {
+export function extractQueryParams({ querystring }: Request<any>): RequestQueryParams {
+	return querystring?.split("&").reduce((queryParams, pair) => {
 		const [ key, value ] = pair.split("=");
 		
 		queryParams[key] = decodeURIComponent(value || "");
