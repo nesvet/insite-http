@@ -56,3 +56,10 @@ export function extractQueryParams({ querystring }: Request<any>): RequestQueryP
 		return queryParams;
 	}, {} as RequestQueryParams) ?? {};
 }
+
+export function extractBearerToken({ headers: { authorization } }: Request<any>) {
+	if (authorization?.indexOf("Bearer ") === 0)
+		return authorization.slice(7);
+	
+	return null;
+}

@@ -1,7 +1,7 @@
 import { IncomingMessage } from "node:http";
 import querystring from "node:querystring";
 import { matchSymbol } from "./symbols";
-import { extractQueryParams, extractUrlParams } from "./utils";
+import { extractBearerToken, extractQueryParams, extractUrlParams } from "./utils";
 import type { RequestParams, RequestQueryParams } from "./types";
 
 
@@ -135,6 +135,13 @@ export class Request<P = RequestParams> extends IncomingMessage {
 	/** Params parsed from the query string part of the URL string */
 	get query() {
 		return (this.#query ??= extractQueryParams(this));
+	}
+	
+	#bearer?: string | null;
+	
+	/** Authorization: Bearer token */
+	get bearer() {
+		return (this.#bearer ??= extractBearerToken(this));
 	}
 	
 	#body?: RequestBody;
