@@ -203,11 +203,15 @@ export class HTTPServer {
 	#parseMappedMiddleware(middleware: Middleware, method: Method | "ALL" = "GET", prefix: string = "") {
 		for (const [ key, value ] of Object.entries(middleware))
 			if (typeof value == "function")
-				this.addRequestListener(method, `${prefix}${key}`, value);
-			else if (isMethod(key))
-				this.#parseMappedMiddleware(value, key, prefix);
+				if (isMethod(key))
+					this.addRequestListener(key, prefix, value);
+				else
+					this.addRequestListener(method, `${prefix}${key}`, value);
 			else
-				this.#parseMappedMiddleware(value, method, `${prefix}${key}`);
+				if (isMethod(key))
+					this.#parseMappedMiddleware(value, key, prefix);
+				else
+					this.#parseMappedMiddleware(value, method, `${prefix}${key}`);
 		
 	}
 	
