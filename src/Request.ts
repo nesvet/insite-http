@@ -74,7 +74,7 @@ export class RequestBody {
 	/** Request body as a parsed JSON object */
 	async json() {
 		
-		this.#json ??= JSON.parse(await this.text());
+		this.#json ??= JSON.parse(await this.text() || "null");
 		
 		return this.#json;
 	}
