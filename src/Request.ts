@@ -1,5 +1,6 @@
 import { IncomingMessage } from "node:http";
 import querystring from "node:querystring";
+import { getRemoteAddress } from "insite-common/backend";
 import { matchSymbol } from "./symbols";
 import { extractBearerToken, extractQueryParams, extractUrlParams } from "./utils";
 import type { RequestParams, RequestQueryParams } from "./types";
@@ -119,6 +120,13 @@ export class Request<P = RequestParams> extends IncomingMessage {
 		if (!this.path)
 			([ this.path, this.querystring ] = this.url.split("?", 2));
 		
+	}
+	
+	#ip?: string;
+	
+	/** IPv4 */
+	get ip() {
+		return (this.#ip ??= getRemoteAddress(this));
 	}
 	
 	[matchSymbol]?: RegExpExecArray;
