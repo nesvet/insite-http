@@ -17,7 +17,7 @@ const nullExtension = {
 export class StaticMiddleware extends ClassMiddleware {
 	constructor({
 		src = "public",
-		urlPrefix = "",
+		root = INSITE_STATIC_ROOT,
 		path: _path,
 		extensions = defaultExtensions,
 		resolved,
@@ -32,8 +32,7 @@ export class StaticMiddleware extends ClassMiddleware {
 		}
 		
 		this.#src = src;
-		this.#urlPrefix = urlPrefix;
-		this.#urlPrefixRegExp = new RegExp(`^${path.join("/", urlPrefix, "/")}`);
+		this.#rootRegExp = new RegExp(`^${path.join("/", root, "/")}`);
 		
 		if (extensions)
 			for (const extension of extensions)
@@ -60,14 +59,13 @@ export class StaticMiddleware extends ClassMiddleware {
 		}
 		
 		this.listeners = {
-			GET: [ [ _path ?? new RegExp(`^${path.join("/", this.#urlPrefix, "/")}(\\w[^\\/]*/)*[^\\/]+\\.[^\\/]`), this.#handler ] ]
+			GET: [ [ _path ?? new RegExp(`^${path.join("/", root, "/")}(\\w[^\\/]*/)*[^\\/]+\\.[^\\/]`), this.#handler ] ]
 		};
 		
 	}
 	
 	#src;
-	#urlPrefix;
-	#urlPrefixRegExp;
+	#rootRegExp;
 	
 	#extensions = new Map();
 	
@@ -113,7 +111,7 @@ export class StaticMiddleware extends ClassMiddleware {
 	}
 	
 	#handler: Handler = (request, response) => {
-		let fileName = decodeURI(request.url).replace(this.#urlPrefixRegExp, "").replaceAll("../", "");
+		let fileName = decodeURI(request.url).replace(this.#rootRegExp, "").replaceAll("../", "");
 		fileName = this.#resolved.get(fileName) ?? path.join(this.#src, fileName);
 		
 		if (this.#restricted.has(fileName))
