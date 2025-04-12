@@ -4,7 +4,10 @@ import { ClassMiddleware } from "../Middleware";
 import { Handler } from "../types";
 
 
-const { INSITE_TITLE } = process.env;
+const {
+	INSITE_STATIC_ROOT = "",
+	INSITE_TITLE
+} = process.env;
 
 const envGlobals: Record<string, unknown> = {};
 for (const key in process.env)
@@ -52,9 +55,10 @@ export class TemplateMiddleware extends ClassMiddleware {
 			"<meta charset=\"utf-8\" />" +
 			"<meta name=\"viewport\" content=\"minimum-scale=1, initial-scale=1, width=device-width\" />" +
 			`<title>${this.#title}</title>` +
-			`${this.#css.map(fileName => `<link rel="stylesheet" href="${fileName}" />`).join("")}` +
+			`<link rel="icon" type="image/x-icon" href="${INSITE_STATIC_ROOT}/favicon.ico">` +
+			`${this.#css.map(fileName => `<link rel="stylesheet" href="${INSITE_STATIC_ROOT}/${fileName}" />`).join("")}` +
 			`${isEmpty(globals) ? "" : `<script>globalThis.__insite=${JSON.stringify(globals)};</script>`}` +
-			"<script type=\"text/javascript\" src=\"/index.js\" defer></script>" +
+			`<script type="text/javascript" src="${INSITE_STATIC_ROOT}/index.js" defer></script>` +
 			"</head>" +
 			"<body>" +
 			`<div id="${this.#rootId}">` +

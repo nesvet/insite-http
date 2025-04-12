@@ -9,6 +9,8 @@ import { defaultPreloaded } from "./preloaded";
 import type { Extension, Options } from "./types";
 
 
+const { INSITE_STATIC_ROOT = "" } = process.env;
+
 const nullExtension = {
 	mimeType: "application/octet-stream"
 };
