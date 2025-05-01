@@ -103,6 +103,12 @@ export class HTTPServer {
 	};
 	
 	#requestListener: Handler = async (request, response) => {
+		
+		([
+			request.path,
+			request.querystring
+		] = request.url.split("?", 2));
+		
 		response[serverSymbol] = this;
 		response[requestSymbol] = request;
 		

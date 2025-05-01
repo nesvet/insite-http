@@ -98,12 +98,6 @@ export class RequestBody {
 }
 
 
-declare module "node:http" {
-	interface IncomingMessage { // eslint-disable-line no-shadow
-		_addHeaderLine(field: string, value: string, first: boolean): void;
-	}
-}
-
 export class Request<P = RequestParams> extends IncomingMessage {
 	
 	declare url: string;
@@ -113,14 +107,6 @@ export class Request<P = RequestParams> extends IncomingMessage {
 	
 	/** Query string part of the URL string */
 	querystring!: string;
-	
-	_addHeaderLine(field: string, value: string, first: boolean): void {
-		super._addHeaderLine(field, value, first);
-		
-		if (!this.path)
-			([ this.path, this.querystring ] = this.url.split("?", 2));
-		
-	}
 	
 	#ip?: string;
 	
