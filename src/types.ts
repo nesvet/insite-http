@@ -76,7 +76,7 @@ export type JSONResponseBody = Parameters<JSON["stringify"]>[0];
 
 export type UrlEncodedResponseBody = ConstructorParameters<typeof URLSearchParams>[0];
 
-export type ResponseBody = JSONResponseBody | Readable | UrlEncodedResponseBody | string;
+export type ResponseBody = JSONResponseBody | Readable | UrlEncodedResponseBody | string;// eslint-disable-line @typescript-eslint/no-redundant-type-constituents
 
 export type ErrorParams = {
 	statusCode: number;

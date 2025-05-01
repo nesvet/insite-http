@@ -36,7 +36,7 @@ export class HTTPServer {
 		if (isServerServer(server)) {
 			this.server = server;
 			
-			new Promise<void>(resolve => void (
+			void new Promise<void>(resolve => void (
 				server.listening ?
 					resolve() :
 					server.on("listening", resolve)
