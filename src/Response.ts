@@ -51,7 +51,7 @@ export class Response extends ServerResponse<Request> {
 	
 	/** End response with a JSON string */
 	json(value: JSONResponseBody, statusCode = 200) {
-		const body = JSON.stringify(value);
+		const body = JSON.stringify(value) ?? "{}";
 		
 		return this.writeHead(statusCode, {
 			"Content-Type": "application/json; charset=utf-8",
