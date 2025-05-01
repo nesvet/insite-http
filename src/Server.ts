@@ -112,10 +112,23 @@ export class HTTPServer {
 		response[serverSymbol] = this;
 		response[requestSymbol] = request;
 		
-		if (!("status" in request) && isRequestMethodAccepted(request.method, this.#listeners))
-			for (const [ regExp, handler ] of this.#listeners[request.method])
-				if (matches(request, regExp) && await handler(request, response) !== false)
-					return;
+		if (!("status" in request) && isRequestMethodAccepted(request.method, this.#listeners)) {
+			const stack = this.#listeners[request.method];
+			let i = 0;
+			
+			const next = async () => {
+				
+				while (i < stack.length) {
+					const listener = stack[i++];
+					
+					if (matches(request, listener[0]))
+						return await listener[1](request, response, next);
+				}
+				
+			};
+			
+			return await next();
+		}
 		
 		response.notFound();
 		

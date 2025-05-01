@@ -14,7 +14,9 @@ export function isMethod(string: string): string is Method | "ALL" {
 	return METHODS.includes(string as Method) || string === "ALL";
 }
 
-export type Handler = (request: Request, response: Response) => unknown;
+export type Next<R = unknown> = () => Promise<R>;
+
+export type Handler = (request: Request, response: Response, next: Next) => unknown;
 
 export type Listener = [ RegExp, Handler ];
 
