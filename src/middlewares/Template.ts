@@ -68,6 +68,8 @@ export class TemplateMiddleware extends ClassMiddleware {
 		
 	}
 	
+	priority = -1000;
+	
 	#title;
 	#css;
 	#rootId;

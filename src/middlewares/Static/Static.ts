@@ -66,6 +66,8 @@ export class StaticMiddleware extends ClassMiddleware {
 		
 	}
 	
+	priority = -900;
+	
 	#src;
 	#rootRegExp;
 	

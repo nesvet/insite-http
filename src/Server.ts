@@ -18,6 +18,7 @@ import {
 	type Method,
 	type Middleware,
 	type Options,
+	type Priority,
 	type RegExpOrString,
 	type ResponseBody
 } from "./types";
@@ -55,8 +56,8 @@ export class HTTPServer {
 		
 		if (listeners)
 			for (const [ method, methodListeners ] of Object.entries(listeners) as [ Method | "ALL", Listener[] ][])
-				for (const [ regExp, handler ] of methodListeners)
-					this.addRequestListener(method, regExp, handler);
+				for (const [ regExp, handler, priority ] of methodListeners)
+					this.addRequestListener(method, regExp, handler, priority);
 		
 		if (errors)
 			for (const statusCodeString of Object.keys(errors)) {
@@ -186,33 +187,74 @@ export class HTTPServer {
 		return handler!(response[requestSymbol], response, handlerParams);
 	}
 	
+	#getWeight(regExp: RegExp, priority: number) {
+		const source = regExp.source.replace(/\\\/\??\$?$/, "");
+		
+		let depth = 0;
+		let wildcards = 0;
+		
+		for (let i = 0, { length } = source; i < length; i++)
+			switch (source[i]) {
+				case "/":
+					depth++;
+					break;
+				
+				case "*":
+					wildcards++;
+					break;
+			}
+		
+		return (priority * 1000) + (depth * 10 - wildcards);
+	}
+	
 	/** Add request listener */
-	addRequestListener(method: Method | "ALL", regExp: RegExpOrString, handler: Handler) {
+	addRequestListener(method: Method | "ALL", regExp: RegExpOrString, handler: Handler, priority = 0) {
 		if (typeof regExp == "string")
 			regExp = pathToRegExp(regExp);
 		
-		if (method && method !== "ALL")
-			this.#listeners[method]?.push([ regExp, handler ]);
-		else
+		if (method && method !== "ALL") {
+			const methodListeners = this.#listeners[method];
+			
+			if (methodListeners) {
+				const listener: Listener = [ regExp, handler, priority ];
+				const weight = this.#getWeight(regExp, priority);
+				
+				for (let i = 0; i < methodListeners.length; i++) {
+					const [ anotherRegExp, , anotherPriority ] = methodListeners[i];
+					
+					if (weight > this.#getWeight(anotherRegExp, anotherPriority)) {
+						methodListeners.splice(i, 0, listener);
+						break;
+					}
+				}
+				
+				if (!methodListeners.includes(listener))
+					methodListeners.push(listener);
+			}
+		} else
 			for (const specificMethod of Object.keys(this.#listeners) as Method[])
-				this.addRequestListener(specificMethod, regExp, handler);
+				this.addRequestListener(specificMethod, regExp, handler, priority);
 		
 		return this;
 	}
 	
 	/** Add middleware */
-	addMiddleware(middleware: GenericMiddleware) {
+	addMiddleware(middleware: GenericMiddleware, priority?: Priority) {
 		if (middleware instanceof ClassMiddleware) {
 			for (const [ method, regExpOrStringArrayMap ] of Object.entries(middleware.listeners))
-				for (const [ regExpOrString, handler ] of regExpOrStringArrayMap)
-					this.addRequestListener(method as Method, regExpOrString, handler);
+				for (const [ regExpOrString, handler, listenerPriority ] of regExpOrStringArrayMap)
+					this.addRequestListener(method as Method, regExpOrString, handler, listenerPriority ?? priority ?? middleware.priority);
 			middleware.bindTo?.(this);
 		} else if (isTupleMiddlewareOrArray(middleware)) {
 			if (isTupleMiddleware(middleware))
 				middleware = [ middleware ];
 			
 			for (const params of middleware)
-				this.addRequestListener(...params.length === 2 ? [ "GET", ...params ] as const : params);
+				this.addRequestListener(
+					...isMethod(params[0] as string) ?
+						params as readonly [ Method, RegExpOrString, Handler, Priority? ] :
+						[ "GET", ...params as [ RegExpOrString, Handler, Priority? ] ] as const
+				);
 		} else
 			this.#parseMappedMiddleware(middleware);
 		
@@ -235,36 +277,36 @@ export class HTTPServer {
 	}
 	
 	/** Add POST request listener */
-	post(regExp: RegExpOrString, handler: Handler) {
-		this.addRequestListener("POST", regExp, handler);
+	post(regExp: RegExpOrString, handler: Handler, priority?: Priority) {
+		this.addRequestListener("POST", regExp, handler, priority);
 		
 		return this;
 	}
 	
 	/** Add GET request listener */
-	get(regExp: RegExpOrString, handler: Handler) {
-		this.addRequestListener("GET", regExp, handler);
+	get(regExp: RegExpOrString, handler: Handler, priority?: Priority) {
+		this.addRequestListener("GET", regExp, handler, priority);
 		
 		return this;
 	}
 	
 	/** Add PUT request listener */
-	put(regExp: RegExpOrString, handler: Handler) {
-		this.addRequestListener("PUT", regExp, handler);
+	put(regExp: RegExpOrString, handler: Handler, priority?: Priority) {
+		this.addRequestListener("PUT", regExp, handler, priority);
 		
 		return this;
 	}
 	
 	/** Add PATCH request listener */
-	patch(regExp: RegExpOrString, handler: Handler) {
-		this.addRequestListener("PATCH", regExp, handler);
+	patch(regExp: RegExpOrString, handler: Handler, priority?: Priority) {
+		this.addRequestListener("PATCH", regExp, handler, priority);
 		
 		return this;
 	}
 	
 	/** Add DELETE request listener */
-	delete(regExp: RegExpOrString, handler: Handler) {
-		this.addRequestListener("DELETE", regExp, handler);
+	delete(regExp: RegExpOrString, handler: Handler, priority?: Priority) {
+		this.addRequestListener("DELETE", regExp, handler, priority);
 		
 		return this;
 	}

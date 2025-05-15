@@ -16,9 +16,11 @@ export function isMethod(string: string): string is Method | "ALL" {
 
 export type Next<R = unknown> = () => Promise<R>;
 
+export type Priority = number;
+
 export type Handler = (request: Request, response: Response, next: Next) => unknown;
 
-export type Listener = [ RegExp, Handler ];
+export type Listener = [ RegExp, Handler, Priority ];
 
 export type Options = {
 	ssl?: {
@@ -46,7 +48,7 @@ export type Middleware = {
 	[K in Method | "ALL"]?: Middleware;
 };
 
-export type TupleMiddleware = readonly [ Method, RegExpOrString, Handler ] | readonly [ RegExpOrString, Handler ];
+export type TupleMiddleware = readonly [ Method, RegExpOrString, Handler, Priority? ] | readonly [ RegExpOrString, Handler, Priority? ];
 
 export type GenericMiddleware =
 	ClassMiddleware |
