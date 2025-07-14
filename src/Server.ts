@@ -27,12 +27,17 @@ import { pathToRegExp } from "./utils";
 
 export class HTTPServer {
 	constructor({
+		icon = "🕸️ ",
+		name = "HTTP",
 		port,
 		ssl,
 		listeners,
 		errors,
 		server
 	}: Options, middlewares: (GenericMiddleware | false | null | undefined)[] = []) {
+		
+		this.icon = icon;
+		this.name = name;
 		
 		if (isServerServer(server)) {
 			this.server = server;
@@ -78,11 +83,8 @@ export class HTTPServer {
 		
 	}
 	
-	/** Server icon */
-	icon = "🕸️ ";
-	
-	/** Server name */
-	name = "HTTP";
+	icon;
+	name;
 	get protocol() {
 		return `http${this.isS ? "s" : ""}`;
 	}

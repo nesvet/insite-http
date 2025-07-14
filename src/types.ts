@@ -23,6 +23,19 @@ export type Handler = (request: Request, response: Response, next: Next) => unkn
 export type Listener = [ RegExp, Handler, Priority ];
 
 export type Options = {
+	
+	/**
+	 * Icon for console logs
+	 * @default "🕸️ "
+	 */
+	icon?: string;
+	
+	/**
+	 * Name
+	 * @default "HTTP"
+	 */
+	name?: string;
+	
 	ssl?: {
 		cert: Buffer | string;
 		key: Buffer | string;
