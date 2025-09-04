@@ -115,7 +115,17 @@ export class StaticMiddleware extends ClassMiddleware {
 	}
 	
 	#handler: Handler = (request, response) => {
-		let fileName = decodeURI(request.url).replace(this.#rootRegExp, "").replaceAll("../", "");
+		
+		let fileName;
+		
+		try {
+			fileName = decodeURI(request.url);
+		} catch {
+			return response.notFound();
+		}
+		
+		fileName = fileName.replace(this.#rootRegExp, "").replaceAll("../", "");
+		
 		fileName = this.#resolved.get(fileName) ?? path.join(this.#src, fileName);
 		
 		if (this.#restricted.has(fileName))

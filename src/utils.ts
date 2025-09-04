@@ -51,7 +51,11 @@ export function extractQueryParams({ querystring }: Request<any>): RequestQueryP
 	return querystring?.split("&").reduce((queryParams, pair) => {
 		const [ key, value ] = pair.split("=");
 		
-		queryParams[key] = decodeURIComponent(value || "");
+		try {
+			queryParams[key] = decodeURIComponent(value || "");
+		} catch {
+			queryParams[key] = "";
+		}
 		
 		return queryParams;
 	}, {} as RequestQueryParams) ?? {};
